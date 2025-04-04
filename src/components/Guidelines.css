@@ -1,0 +1,88 @@
+/* Guidelines Page Styling */
+.guidelines-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 20px;
+  background: linear-gradient(
+    to right,
+    #1e3c72,
+    #2a5298
+  ); /* Elegant Gradient */
+  color: #fff;
+  text-align: center;
+  font-family: "Arial", sans-serif;
+}
+
+/* Heading Styling */
+.guidelines-section h3 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+/* Guidelines List */
+.guidelines-section ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 80%;
+  max-width: 500px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.1); /* Slightly Transparent Background */
+  padding: 15px;
+  border-radius: 10px;
+}
+
+/* Individual List Items */
+.guidelines-section li {
+  font-size: 1.2rem;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Remove border from the last item */
+.guidelines-section li:last-child {
+  border-bottom: none;
+}
+
+/* Start Assessment Button */
+.start-assessment-btn {
+  margin-top: 20px;
+  padding: 12px 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #fff;
+  background: #ff6600;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.start-assessment-btn:hover {
+  background: #ff4500;
+  transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .guidelines-section h3 {
+    font-size: 1.5rem;
+  }
+
+  .guidelines-section ul {
+    width: 90%;
+  }
+
+  .guidelines-section li {
+    font-size: 1rem;
+  }
+
+  .start-assessment-btn {
+    font-size: 1rem;
+    padding: 10px 15px;
+  }
+}

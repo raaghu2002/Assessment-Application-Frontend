@@ -1,0 +1,82 @@
+body {
+  overflow-y: hidden;
+  height: 120vh;
+}
+
+.assessment-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  height: 60vh;
+  overflow-y: hidden;
+}
+
+.question-container {
+  flex: 7;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-right: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.option {
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  transition: 0.3s;
+  border: 1px solid #ccc;
+}
+
+.option.selected {
+  background-color: lightgreen;
+  border: 2px solid rgb(201, 209, 201);
+}
+
+.navigation-buttons {
+  margin-top: 100px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.prev-button,
+.next-button,
+.submit-button {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.prev-button {
+  background-color: gray;
+  color: white;
+}
+
+.next-button {
+  background-color: blue;
+  color: white;
+}
+
+.submit-button {
+  background-color: red;
+  color: white;
+}
+
+.question-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+
+.question-btn {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+}

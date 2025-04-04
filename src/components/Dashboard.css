@@ -1,0 +1,173 @@
+.dashboard {
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  display: flex;
+  flex-direction: column;
+  font-family: "Poppins", sans-serif;
+  color: white;
+  overflow: hidden;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 15px 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  backdrop-filter: blur(10px);
+
+  transition: all 0.4s ease-in-out;
+  z-index: 1000;
+}
+
+/* Logo */
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  color: #ffffff;
+}
+.nav {
+  margin-right: 100px;
+  justify-content: space-between;
+}
+
+/* Navigation Styling */
+.nav ul {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+}
+
+.nav ul li {
+  display: inline;
+}
+
+.nav ul li a {
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 600;
+  color: #f5f5f5;
+  transition: color 0.3s ease-in-out;
+}
+
+.nav ul li a:hover {
+  color: #4fc3f7;
+}
+
+/* Content Styling */
+.bodySection {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 20px 20px;
+}
+
+/* Centered Content */
+.content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* Left Side */
+.leftContainer {
+  flex: 1;
+  max-width: 600px;
+  text-align: left;
+  margin-left: 150px;
+}
+
+.leftContainer h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.leftContainer p {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin-bottom: 20px;
+}
+
+.welcome-text {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #4fc3f7;
+}
+
+/* Course Buttons */
+.course {
+  display: flex;
+  flex-direction: column; /* Align buttons vertically */
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.course button {
+  background: linear-gradient(135deg, #ff6f61, #ff914d);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+  max-width: 50%;
+}
+
+.course button:hover {
+  background: linear-gradient(135deg, #ff914d, #ff6f61);
+  transform: scale(1.05);
+}
+
+/* Call to Action Button */
+.ctaButton {
+  background: linear-gradient(135deg, #4fc3f7, #1976d2);
+  color: white;
+  border: none;
+  padding: 15px 25px;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.ctaButton:hover {
+  background: linear-gradient(135deg, #1976d2, #4fc3f7);
+  transform: scale(1.05);
+}
+
+/* Right Side */
+.rightContainer {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.transparentTextImage {
+  width: 100%;
+  max-width: 200px; /* Adjust size as needed */
+  height: auto;
+  background-color: transparent; /* Ensures the background is transparent */
+  mix-blend-mode: normal;
+}
+.body {
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  display: flex;
+  flex-direction: column;
+  font-family: "Poppins", sans-serif;
+  color: white;
+  overflow: hidden;
+}

@@ -1,0 +1,114 @@
+/* Centering the Rotating Section */
+.rotating-section {
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: transparent; /* Removed black background */
+}
+
+/* Container for Circles */
+.rotating-container {
+  position: relative;
+  width: 350px;
+  height: 350px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -150px;
+}
+
+/* Common Circle Styling */
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px dashed rgba(0, 0, 0, 0.5); /* Changed to black (visible on light backgrounds) */
+  animation: rotate 10s linear infinite;
+}
+
+/* Five Circle Sizes */
+.outermost {
+  width: 300px;
+  height: 300px;
+}
+
+.outer {
+  width: 250px;
+  height: 250px;
+}
+
+.middle {
+  width: 200px;
+  height: 200px;
+}
+
+.inner {
+  width: 150px;
+  height: 150px;
+}
+
+.innermost {
+  width: 100px;
+  height: 100px;
+}
+
+/* Smooth Rotation Animation */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Rotating Images */
+.rotating-image {
+  position: absolute;
+  width: 20px; /* Adjust image size */
+  height: 20px;
+  animation: rotate-reverse 10s linear infinite;
+}
+
+/* Reverse Rotation for Images */
+@keyframes rotate-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .rotating-container {
+    width: 250px;
+    height: 250px;
+  }
+  .outermost {
+    width: 220px;
+    height: 220px;
+  }
+  .outer {
+    width: 180px;
+    height: 180px;
+  }
+  .middle {
+    width: 140px;
+    height: 140px;
+  }
+  .inner {
+    width: 100px;
+    height: 100px;
+  }
+  .innermost {
+    width: 70px;
+    height: 70px;
+  }
+  .rotating-image {
+    width: 30px;
+    height: 30px;
+  }
+}
