@@ -37,6 +37,7 @@ const RotatingCircles = () => {
                 left: `calc(50% + ${
                   radius * Math.cos((angle * Math.PI) / 180)
                 }px)`,
+                transform: `rotate(${angle}deg)`, // Align with circle rotation
               }}
             />
           );

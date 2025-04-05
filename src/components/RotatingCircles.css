@@ -1,7 +1,6 @@
 /* Centering the Rotating Section */
 .rotating-section {
   display: flex;
-
   justify-content: center;
   align-items: center;
   height: 100vh;
@@ -11,12 +10,12 @@
 /* Container for Circles */
 .rotating-container {
   position: relative;
-  width: 350px;
-  height: 350px;
+  width: 400px; /* Increased size */
+  height: 400px; /* Increased size */
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: -150px;
+  margin-top: -200px; /* Adjusted margin */
 }
 
 /* Common Circle Styling */
@@ -29,28 +28,28 @@
 
 /* Five Circle Sizes */
 .outermost {
-  width: 300px;
-  height: 300px;
+  width: 320px;
+  height: 320px;
 }
 
 .outer {
-  width: 250px;
-  height: 250px;
+  width: 280px;
+  height: 280px;
 }
 
 .middle {
+  width: 240px;
+  height: 240px;
+}
+
+.inner {
   width: 200px;
   height: 200px;
 }
 
-.inner {
-  width: 150px;
-  height: 150px;
-}
-
 .innermost {
-  width: 100px;
-  height: 100px;
+  width: 160px;
+  height: 160px;
 }
 
 /* Smooth Rotation Animation */
@@ -66,8 +65,8 @@
 /* Rotating Images */
 .rotating-image {
   position: absolute;
-  width: 20px; /* Adjust image size */
-  height: 20px;
+  width: 40px; /* Increased image size */
+  height: 40px; /* Increased image size */
   animation: rotate-reverse 10s linear infinite;
 }
 

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import "./Assessment.css";
+
+const base_url = process.env.REACT_APP_BASE_URL || "http://localhost:8089";
 
 function AssessmentPage() {
   const [questions, setQuestions] = useState([]);
@@ -9,47 +11,57 @@ function AssessmentPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(3600); // 1 Hour in seconds
   const [startTime, setStartTime] = useState(null);
-  const [endTime, setEndTime] = useState(null);
-  const [score, setScore] = useState(null); // Add this state for storing score
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
+  // Extract subject from query parameters
+  const queryParams = new URLSearchParams(location.search);
+  const subject = queryParams.get("subject") || "JAVA FULL STACK";
+
+  // Fetch questions on component mount
   useEffect(() => {
-    const currentStartTime = new Date().toLocaleString(); // Capture real-time
+    const currentStartTime = new Date().toLocaleString();
     setStartTime(currentStartTime);
 
     const userId = localStorage.getItem("userId");
     const userName = localStorage.getItem("username");
 
     if (!userId || !userName) {
-      console.error("User information is missing. Please log in again.");
+      setError("User information is missing. Please log in again.");
       return;
     }
 
+    setIsLoading(true);
     axios
-      .get("http://localhost:8080/api/questions")
+      .get(`${base_url}/api/questions/get?subject=${subject}`)
       .then((response) => {
         if (!response.data || response.data.length === 0) {
-          console.log("No questions available!");
+          setError("No questions available for this subject!");
           return;
         }
 
         setQuestions(response.data);
-
-        const initialResponses = response.data.map((question) => ({
-          questionId: question.questionId,
-          userId,
-          userName,
-          userResponse: null,
-        }));
-
-        setResponses(initialResponses);
+        setResponses(
+          response.data.map((question) => ({
+            questionId: question.questionId,
+            userId,
+            userName,
+            userResponse: null,
+          }))
+        );
+        setIsLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching questions:", error);
+        setError(`Failed to load questions: ${error.message}`);
+        setIsLoading(false);
       });
-  }, []);
+  }, [subject]);
 
+  // Timer effect
   useEffect(() => {
     if (timeLeft > 0) {
       const timer = setInterval(() => {
@@ -80,13 +92,13 @@ function AssessmentPage() {
 
   const handleSubmit = async () => {
     try {
-      const currentEndTime = new Date().toLocaleString(); // Capture real-time on submit
+      const currentEndTime = new Date().toLocaleString();
 
-      // Transform responses into required format, ensuring null for unanswered questions
+      // Transform responses into required format
       const formattedResponses = responses.map((response) => ({
-        question: { questionId: response.questionId }, // Wrap questionId in a "question" object
+        question: { questionId: response.questionId },
         userId: response.userId,
-        userResponse: response.userResponse || null, // Send null if userResponse is empty
+        userResponse: response.userResponse || null,
         username: response.userName,
       }));
 
@@ -94,35 +106,32 @@ function AssessmentPage() {
 
       // Calculate attempted and total questions
       const attemptedQuestions = responses.filter(
-        (response) =>
-          response.userResponse !== null && response.userResponse !== undefined
+        (response) => response.userResponse !== null
       ).length;
       const totalQuestions = responses.length;
 
-      // Allow submission at any time, even with unanswered questions
       const response = await axios.post(
-        "http://localhost:8080/user-responses/submit",
+        `${base_url}/user-responses/submit`,
         formattedResponses
       );
 
       if (response.data !== undefined) {
-        setScore(response.data); // Assuming setScore updates the score state
-        console.log("Score received from backend:", response.data);
-        alert(`Your score is: ${response.data}`);
-
-        // Navigate to Review Page with score, attempted questions, and total questions
+        const score = response.data;
+        console.log("Score received from backend:", score);
+        
+        // Navigate to Review Page with score and stats
         navigate("/review", {
           state: {
-            score: response.data,
-            attemptedQuestions: attemptedQuestions,
-            totalQuestions: totalQuestions,
+            score,
+            attemptedQuestions,
+            totalQuestions,
             startTime,
             endTime: currentEndTime,
+            subject
           },
         });
       } else {
-        console.error("No score received from backend.");
-        alert("Error: No score received from backend.");
+        throw new Error("No score received from backend");
       }
     } catch (error) {
       console.error("Error submitting responses:", error);
@@ -130,197 +139,124 @@ function AssessmentPage() {
     }
   };
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        padding: "20px",
-        height: "100vh",
-      }}
-    >
-      {/* Left Container (70%) - Question Display */}
-      <div
-        style={{
-          flex: "7",
-          padding: "20px",
-          border: "1px solid #ccc",
-          borderRadius: "8px",
-          marginRight: "10px",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        {questions.length > 0 && (
-          <div key={questions[currentQuestionIndex].questionId}>
-            <h4>
-              {questions[currentQuestionIndex].questionId}.{" "}
-              {questions[currentQuestionIndex].questionText}
-            </h4>
-            <div>
-              {["A", "B", "C", "D"].map((optionKey) => {
-                const optionValue =
-                  questions[currentQuestionIndex][`option${optionKey}`];
-                const isSelected =
-                  responses.find(
-                    (res) =>
-                      res.questionId ===
-                        questions[currentQuestionIndex].questionId &&
-                      res.userResponse === optionKey
-                  )?.userResponse === optionKey;
-
-                return (
-                  <div
-                    key={optionKey}
-                    onClick={() => handleOptionClick(optionKey)}
-                    style={{
-                      padding: "15px",
-                      marginBottom: "10px",
-                      borderRadius: "8px",
-                      backgroundColor: isSelected ? "lightgreen" : "#f0f0f0",
-                      cursor: "pointer",
-                      transition: "0.3s",
-                      border: isSelected ? "2px solid green" : "1px solid #ccc",
-                    }}
-                  >
-                    <strong>{optionKey}.</strong> {optionValue}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Buttons placed 100px below the options */}
-        <div
-          style={{
-            marginTop: "100px",
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <button
-            onClick={() =>
-              setCurrentQuestionIndex((prevIndex) =>
-                prevIndex > 0 ? prevIndex - 1 : prevIndex
-              )
-            }
-            disabled={currentQuestionIndex === 0}
-            style={{
-              padding: "10px",
-              backgroundColor: "gray",
-              color: "white",
-              border: "none",
-              borderRadius: "5px",
-              cursor: currentQuestionIndex === 0 ? "not-allowed" : "pointer",
-            }}
-          >
-            Previous
-          </button>
-
-          <button
-            onClick={() =>
-              setCurrentQuestionIndex((prevIndex) =>
-                prevIndex < questions.length - 1 ? prevIndex + 1 : prevIndex
-              )
-            }
-            disabled={currentQuestionIndex === questions.length - 1}
-            style={{
-              padding: "10px",
-              backgroundColor: "blue",
-              color: "white",
-              border: "none",
-              borderRadius: "5px",
-              cursor:
-                currentQuestionIndex === questions.length - 1
-                  ? "not-allowed"
-                  : "pointer",
-            }}
-          >
-            Next
-          </button>
-        </div>
+  // Loading and error states
+  if (isLoading) {
+    return (
+      <div className="loading-container">
+        <h2>Loading assessment questions...</h2>
+        <p>Please wait while we prepare your {subject} assessment.</p>
       </div>
+    );
+  }
 
-      {/* Right Container (30%) - Timer & Question Grid */}
-      <div
-        style={{
-          flex: "3",
-          padding: "20px",
-          border: "1px solid #ccc",
-          borderRadius: "8px",
-          maxHeight: "500px",
-          overflowY: "auto",
-          textAlign: "center",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "flex-start",
-        }}
-      >
-        {/* Timer */}
-        <h2 style={{ marginBottom: "40px" }}>
-          Time Left: {formatTime(timeLeft)}
-        </h2>
+  if (error) {
+    return (
+      <div className="error-container">
+        <h2>Error</h2>
+        <p>{error}</p>
+        <button onClick={() => navigate("/dashboard")}>Return to Dashboard</button>
+      </div>
+    );
+  }
 
-        <h3>Questions</h3>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(50px, 1fr))",
-            gap: "10px",
-            width: "100%",
-            justifyContent: "center",
-          }}
-        >
-          {questions.map((question, index) => {
-            const isAnswered = responses.find(
-              (res) =>
-                res.questionId === question.questionId && res.userResponse
-            );
+  return (
+    <div className="assessment-container">
+      {/* Header with subject and timer */}
+      <header className="assessment-header">
+        <h2>{subject} Assessment</h2>
+        <div className="timer">Time Left: {formatTime(timeLeft)}</div>
+      </header>
+      
+      <div className="assessment-content">
+        {/* Left Container - Question Display */}
+        <div className="question-container">
+          {questions.length > 0 && (
+            <div className="question-box">
+              <h4 className="question-text">
+                {currentQuestionIndex + 1}. {questions[currentQuestionIndex].questionText}
+              </h4>
+              <div className="options-list">
+                {["A", "B", "C", "D"].map((optionKey) => {
+                  const optionValue =
+                    questions[currentQuestionIndex][`option${optionKey}`];
+                  const isSelected =
+                    responses.find(
+                      (res) =>
+                        res.questionId === questions[currentQuestionIndex].questionId &&
+                        res.userResponse === optionKey
+                    )?.userResponse === optionKey;
 
-            return (
-              <button
-                key={question.questionId}
-                onClick={() => setCurrentQuestionIndex(index)}
-                style={{
-                  width: "50px",
-                  height: "50px",
-                  backgroundColor: isAnswered
-                    ? "green"
-                    : currentQuestionIndex === index
-                    ? "lightblue"
-                    : "#ddd",
-                  color: "black",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                  textAlign: "center",
-                  fontSize: "16px",
-                }}
-              >
-                {question.questionId}
-              </button>
-            );
-          })}
+                  return (
+                    <div
+                      key={optionKey}
+                      onClick={() => handleOptionClick(optionKey)}
+                      className={`option-item ${isSelected ? "selected" : ""}`}
+                    >
+                      <strong>{optionKey}.</strong> {optionValue}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Navigation buttons */}
+              <div className="navigation-buttons">
+                <button
+                  onClick={() =>
+                    setCurrentQuestionIndex((prevIndex) =>
+                      prevIndex > 0 ? prevIndex - 1 : prevIndex
+                    )
+                  }
+                  disabled={currentQuestionIndex === 0}
+                  className="prev-button"
+                >
+                  Previous
+                </button>
+
+                <button
+                  onClick={() =>
+                    setCurrentQuestionIndex((prevIndex) =>
+                      prevIndex < questions.length - 1 ? prevIndex + 1 : prevIndex
+                    )
+                  }
+                  disabled={currentQuestionIndex === questions.length - 1}
+                  className="next-button"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Submit Button */}
-        <button
-          onClick={handleSubmit}
-          style={{
-            marginTop: "20px",
-            padding: "10px",
-            backgroundColor: "red",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            fontSize: "16px",
-            cursor: "pointer",
-          }}
-        >
-          Submit
-        </button>
+        {/* Right Container - Question Grid */}
+        <div className="question-grid-container">
+          <h3>Questions</h3>
+          <div className="question-grid">
+            {questions.map((question, index) => {
+              const isAnswered = responses.find(
+                (res) =>
+                  res.questionId === question.questionId && res.userResponse
+              );
+
+              return (
+                <button
+                  key={question.questionId}
+                  onClick={() => setCurrentQuestionIndex(index)}
+                  className={`question-button ${
+                    isAnswered ? "answered" : ""
+                  } ${currentQuestionIndex === index ? "current" : ""}`}
+                >
+                  {index + 1}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Submit Button */}
+          <button onClick={handleSubmit} className="submit-button">
+            Submit Assessment
+          </button>
+        </div>
       </div>
     </div>
   );

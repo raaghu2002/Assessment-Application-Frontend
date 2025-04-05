@@ -184,6 +184,26 @@ const LoginPage = () => {
     }
   };
 
+  // In your Login component, after successful login:
+const handleSuccessfulLogin = (userData) => {
+  // Store user data in localStorage
+  localStorage.setItem("userId", userData.userId);
+  localStorage.setItem("username", userData.username);
+  
+  // Check if there's a redirect path stored
+  const redirectPath = sessionStorage.getItem("redirectAfterLogin");
+  
+  if (redirectPath) {
+    // Clear the stored path
+    sessionStorage.removeItem("redirectAfterLogin");
+    // Navigate to the stored path
+    navigate(redirectPath);
+  } else {
+    // Default navigation if no stored path
+    navigate("/dashboard");
+  }
+};
+
   return (
     <div className={`container ${isSignUp ? "right-panel-active" : ""}`}>
       <div className="form-container sign-up-container">

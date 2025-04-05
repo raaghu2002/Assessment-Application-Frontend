@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import axios from "axios";
 
 const ProtectedRoute = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
-
+    
     useEffect(() => {
         const validateToken = async () => {
             const token = localStorage.getItem("token");
+            console.log("Token before validation:", token); // Debugging
 
             if (!token) {
                 setIsAuthenticated(false);
@@ -14,24 +16,18 @@ const ProtectedRoute = () => {
             }
 
             try {
-                const response = await fetch("/api/auth/validate-token", {
-                    method: "GET",
+                const response = await axios.get("http://localhost:8089/api/auth/validate-token", {
                     headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
                     },
-                    credentials: 'include'
                 });
 
-                if (response.ok) {
-                    setIsAuthenticated(true);
-                } else {
-                    setIsAuthenticated(false);
-                    localStorage.removeItem("token");
-                }
+                console.log("Token validation response:", response.data); // Debugging
+                setIsAuthenticated(true);
             } catch (error) {
-                console.error("Token validation failed", error);
+                console.error("Token validation error:", error.response?.data || error.message);
                 setIsAuthenticated(false);
+                localStorage.removeItem("token"); // Clear invalid token
             }
         };
 
@@ -39,10 +35,10 @@ const ProtectedRoute = () => {
     }, []);
 
     if (isAuthenticated === null) {
-        return <p>Loading...</p>;
+        return <p>Loading...</p>; // Prevents flashing redirects
     }
 
-    return isAuthenticated ? <Outlet/> : <Navigate to="/login"/>;
+    return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoute;

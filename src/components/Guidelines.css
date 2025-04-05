@@ -1,88 +1,93 @@
-/* Guidelines Page Styling */
-.guidelines-section {
+.guidelines-container {
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
+  background-color: #f5f7fa;
   padding: 20px;
-  background: linear-gradient(
-    to right,
-    #1e3c72,
-    #2a5298
-  ); /* Elegant Gradient */
-  color: #fff;
+}
+
+.guidelines-card {
+  max-width: 800px;
+  width: 100%;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 30px;
   text-align: center;
-  font-family: "Arial", sans-serif;
 }
 
-/* Heading Styling */
-.guidelines-section h3 {
-  font-size: 2rem;
-  margin-bottom: 20px;
-  font-weight: bold;
+.guidelines-card h2 {
+  color: #333;
+  margin-bottom: 5px;
 }
 
-/* Guidelines List */
-.guidelines-section ul {
+.guidelines-card h3 {
+  color: #555;
+  margin-bottom: 25px;
+  font-weight: 500;
+}
+
+.guidelines-content {
+  text-align: left;
+  margin-bottom: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.guidelines-content ul {
+  flex: 1;
+  min-width: 300px;
   list-style-type: none;
   padding: 0;
-  margin: 0;
-  width: 80%;
-  max-width: 500px;
-  text-align: left;
-  background: rgba(255, 255, 255, 0.1); /* Slightly Transparent Background */
-  padding: 15px;
-  border-radius: 10px;
 }
 
-/* Individual List Items */
-.guidelines-section li {
-  font-size: 1.2rem;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+.guidelines-content ul li {
+  margin-bottom: 15px;
+  padding-left: 30px;
+  position: relative;
+  color: #333;
 }
 
-/* Remove border from the last item */
-.guidelines-section li:last-child {
-  border-bottom: none;
-}
-
-/* Start Assessment Button */
-.start-assessment-btn {
-  margin-top: 20px;
-  padding: 12px 20px;
-  font-size: 1.2rem;
+.guidelines-content ul li:before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: #007bff;
   font-weight: bold;
-  color: #fff;
-  background: #ff6600;
+}
+
+.guidelines-info {
+  flex: 1;
+  min-width: 300px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.guidelines-info p {
+  margin-bottom: 10px;
+}
+
+.start-assessment-btn {
+  background-color: #007bff;
+  color: white;
   border: none;
   border-radius: 5px;
+  padding: 12px 30px;
+  font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
+  transition: background-color 0.3s;
 }
 
 .start-assessment-btn:hover {
-  background: #ff4500;
-  transform: scale(1.05);
+  background-color: #0056b3;
 }
 
-/* Responsive Design */
-@media (max-width: 600px) {
-  .guidelines-section h3 {
-    font-size: 1.5rem;
-  }
-
-  .guidelines-section ul {
-    width: 90%;
-  }
-
-  .guidelines-section li {
-    font-size: 1rem;
-  }
-
-  .start-assessment-btn {
-    font-size: 1rem;
-    padding: 10px 15px;
+@media (max-width: 768px) {
+  .guidelines-content {
+    flex-direction: column;
   }
 }
