@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 import RotatingCircles from "./RotatingCircles";
+const base_url = process.env.REACT_APP_BASE_URL || "http://localhost:8089";
+
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -10,12 +12,14 @@ const Dashboard = () => {
   const [userData, setUserData] = useState(null);
   const token = localStorage.getItem("token");
 
+  console.log("Token:", token);
+
   // Fetch user data
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8089/api/users/dashboard",
+          `${base_url}/api/users/dashboard`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setUserData(response.data);

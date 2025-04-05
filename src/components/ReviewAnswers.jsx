@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import "./ReviewAnswers.css";
+const base_url = process.env.REACT_APP_BASE_URL || "http://localhost:8089";
 
 const ReviewAnswers = () => {
     const [reviewData, setReviewData] = useState([]);
@@ -45,7 +46,7 @@ const ReviewAnswers = () => {
 
             try {
                 const userId = localStorage.getItem("userId");
-                const response = await axios.get(`http://localhost:8089/user-responses/review/${userId}`);
+                const response = await axios.get(`${base_url}/user-responses/review/${userId}`);
                 if (Array.isArray(response.data)) {
                     setReviewData(response.data);
                 } else {

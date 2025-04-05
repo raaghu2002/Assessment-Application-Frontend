@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./LoginPage.css";
+const base_url = process.env.REACT_APP_BASE_URL || "http://localhost:8089";
 
 const LoginPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -62,10 +63,11 @@ const LoginPage = () => {
   const handleInitialRegistration = async () => {
     if (!validateForm()) return;
     try {
-      const response = await axios.post("http://localhost:8089/api/auth/register", {
+      const response = await axios.post(`${base_url}/api/auth/register`, {
         name,
         email,
       });
+      
       alert("OTP sent to your email. Please enter OTP to proceed.");
       setIsOtpStep(true);
       setStoredEmail(email);
@@ -86,7 +88,7 @@ const LoginPage = () => {
       params.append('password', password);
       
       const response = await axios.post(
-        `http://localhost:8089/api/auth/verify-otp?${params.toString()}`
+        `${base_url}/api/auth/verify-otp?${params.toString()}`
       );
       
       console.log("OTP verification response:", response.data);
@@ -108,10 +110,10 @@ const LoginPage = () => {
       params.append('email', email);
       params.append('password', password);
       
-      console.log("Request URL:", `http://localhost:8089/api/auth/login?${params.toString()}`);
+      console.log("Request URL:", `${base_url}/api/auth/login?${params.toString()}`);
       
       const response = await axios.post(
-        `http://localhost:8089/api/auth/login?${params.toString()}`
+        `${base_url}/api/auth/login?${params.toString()}`
       );
   
       console.log("Login response:", response);
@@ -152,7 +154,7 @@ const LoginPage = () => {
       params.append('email', email);
       
       const response = await axios.post(
-        `http://localhost:8089/api/auth/forgot-password?${params.toString()}`
+        `${base_url}/api/auth/forgot-password?${params.toString()}`
       );
       
       alert("OTP sent to your email for password reset.");
@@ -173,7 +175,7 @@ const LoginPage = () => {
       params.append('newPassword', newPassword);
       
       const response = await axios.post(
-        `http://localhost:8089/api/auth/reset-password?${params.toString()}`
+        `${base_url}/api/auth/reset-password?${params.toString()}`
       );
       
       alert("Password reset successful.");

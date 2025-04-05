@@ -21,53 +21,57 @@ const Review = () => {
     };
 
   return (
-    <div className="main">
-      <div className="head">
-        <div className="left">
-          <p>
-            <strong>Username:</strong> {username}
-          </p>
-          <p>
-            <strong>User ID:</strong> {userId}
-          </p>
-          <p>
-            <strong>Start Time:</strong> {startTime}
-          </p>
-          <p>
-            <strong>Completed Time:</strong> {endTime}
-          </p>
+    <div className="review-container">
+      <div className="review-card">
+        <div className="review-content">
+          <div className="review-info">
+            <h3>Test Details</h3>
+            <p>
+              <strong>Username:</strong> {username}
+            </p>
+            <p>
+              <strong>User ID:</strong> {userId}
+            </p>
+            <p>
+              <strong>Start Time:</strong> {startTime}
+            </p>
+            <p>
+              <strong>Completed Time:</strong> {endTime}
+            </p>
+          </div>
+
+          <div className="review-stats">
+            <h3>Test Statistics</h3>
+            <p>
+              <strong>Score:</strong> {score}
+            </p>
+            <p>
+              <strong>Attempted Questions:</strong> {attemptedQuestions}
+            </p>
+            <p>
+              <strong>Total Questions:</strong> {totalQuestions}
+            </p>
+          </div>
         </div>
 
-        <div className="right">
-          <p>
-            <strong>Score:</strong> {score}
-          </p>
-          <p>
-            <strong>Attempted Questions:</strong> {attemptedQuestions}
-          </p>
-          <p>
-            <strong>Total Questions:</strong> {totalQuestions}
-          </p>
-          <p></p>
+        <div className="review-button-container">
+          <button
+            className="review-button"
+            onClick={() =>
+              navigate("/reviewanswers", {
+                state: {
+                  score,
+                  attemptedQuestions,
+                  totalQuestions,
+                  startTime,
+                  endTime,
+                },
+              })
+            }
+          >
+            Review Answers
+          </button>
         </div>
-      </div>
-
-      <div className="review-button">
-        <button
-          onClick={() =>
-            navigate("/reviewanswers", {
-              state: {
-                score,
-                attemptedQuestions,
-                totalQuestions,
-                startTime,
-                endTime,
-              },
-            })
-          }
-        >
-          Review Answers
-        </button>
       </div>
     </div>
   );
