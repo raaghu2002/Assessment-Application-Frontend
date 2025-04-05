@@ -10,47 +10,59 @@ const ReviewAnswers = () => {
     const location = useLocation();
     const navigate = useNavigate();
     
-    // Extract data from router state
-    const { state } = location;
-    const score = state?.score || null;
-    const startTime = state?.startTime || null;
-    const endTime = state?.endTime || null;
-    const attemptedQuestions = state?.attemptedQuestions || 0;
-    const totalQuestions = state?.totalQuestions || 0;
-    const subject = state?.subject || "Assessment";
+    const [score, setScore] = useState(0);
+    const [startTime, setStartTime] = useState("");
+    const [endTime, setEndTime] = useState("");
+    const [attemptedQuestions, setAttemptedQuestions] = useState(0);
+    const [totalQuestions, setTotalQuestions] = useState(0);
+    const [subject, setSubject] = useState("Assessment");
 
-    // Calculate percentage
-    const percentage = score !== null ? (score / totalQuestions) * 100 : 0;
-    
     useEffect(() => {
         const fetchReviewData = async () => {
-            // If we don't have state data, the user might have refreshed the page
-            if (!state) {
+            // Check if location.state exists
+            if (!location.state) {
                 setError("Assessment data not available. Please return to dashboard.");
                 setIsLoading(false);
                 return;
             }
 
+            // Destructure state safely here
+            const {
+                score = 0,
+                startTime = "",
+                endTime = "",
+                attemptedQuestions = 0,
+                totalQuestions = 0,
+                subject = "Assessment"
+            } = location.state;
+
+            setScore(score);
+            setStartTime(startTime);
+            setEndTime(endTime);
+            setAttemptedQuestions(attemptedQuestions);
+            setTotalQuestions(totalQuestions);
+            setSubject(subject);
+
             try {
-                // You need to implement this API endpoint to return user's answers with correct options
                 const userId = localStorage.getItem("userId");
                 const response = await axios.get(`http://localhost:8089/user-responses/review/${userId}`);
-                
-                if (response.data && Array.isArray(response.data)) {
+                if (Array.isArray(response.data)) {
                     setReviewData(response.data);
                 } else {
-                    throw new Error("Invalid response data format");
+                    throw new Error("Invalid response format");
                 }
             } catch (err) {
-                console.error("Error fetching review data:", err);
                 setError("Failed to load review data. Please try again later.");
+                console.error(err);
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchReviewData();
-    }, [state]);
+    }, [location.state]);
+
+    const percentage = totalQuestions ? (score / totalQuestions) * 100 : 0;
 
     const getStatusClass = (userResponse, correctOption) => {
         if (!userResponse) return "unanswered";
@@ -80,13 +92,11 @@ const ReviewAnswers = () => {
         <div className="review-container">
             <div className="review-header">
                 <h2>{subject} Assessment Review</h2>
-                
                 <div className="score-summary">
                     <div className="score-card">
                         <div className="score-value">{score}</div>
                         <div className="score-label">Score</div>
                     </div>
-                    
                     <div className="score-details">
                         <div className="score-percentage">
                             <span className="percentage-value">{percentage.toFixed(1)}%</span>
@@ -97,7 +107,6 @@ const ReviewAnswers = () => {
                         </div>
                     </div>
                 </div>
-                
                 <div className="time-details">
                     <div><strong>Started:</strong> {startTime}</div>
                     <div><strong>Completed:</strong> {endTime}</div>
@@ -105,42 +114,41 @@ const ReviewAnswers = () => {
             </div>
 
             <div className="review-content">
-                <h3>Question Review</h3>
-                
+                <h3>Question Review ({reviewData.length} Questions)</h3>
                 {reviewData.length > 0 ? (
-                    reviewData.map((item, index) => (
-                        <div 
-                            key={item.questionId || index} 
-                            className={`question-review-item ${getStatusClass(item.userResponse, item.correctOption)}`}
-                        >
-                            <div className="question-number">Question {index + 1}</div>
-                            <div className="question-text">{item.questionText}</div>
-                            
-                            <div className="options-container">
-                                {['A', 'B', 'C', 'D'].map(option => (
-                                    <div 
-                                        key={option} 
-                                        className={`option-item ${item.userResponse === option ? 'selected' : ''} ${item.correctOption === option ? 'correct-option' : ''}`}
-                                    >
-                                        <span className="option-letter">{option}</span>
-                                        <span className="option-text">{item[`option${option}`]}</span>
-                                    </div>
-                                ))}
+                    <div className="questions-list">
+                        {reviewData.map((item, index) => (
+                            <div 
+                                key={index} 
+                                className={`question-review-item ${getStatusClass(item.userResponse, item.correctOption)}`}
+                            >
+                                <div className="question-number">Question {index + 1}</div>
+                                <div className="question-text">{item.questionText}</div>
+                                <div className="options-container">
+                                    {['A', 'B', 'C', 'D'].map(option => (
+                                        <div 
+                                            key={option} 
+                                            className={`option-item ${item.userResponse === option ? 'selected' : ''} ${item.correctOption === option ? 'correct-option' : ''}`}
+                                        >
+                                            <span className="option-letter">{option}</span>
+                                            <span className="option-text">{item[`option${option}`]}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="answer-status">
+                                    {!item.userResponse && <span className="unanswered-text">Not Answered</span>}
+                                    {item.userResponse && item.userResponse === item.correctOption && 
+                                        <span className="correct-text">Correct</span>
+                                    }
+                                    {item.userResponse && item.userResponse !== item.correctOption && 
+                                        <span className="incorrect-text">
+                                            Incorrect (You selected {item.userResponse}, correct answer is {item.correctOption})
+                                        </span>
+                                    }
+                                </div>
                             </div>
-                            
-                            <div className="answer-status">
-                                {!item.userResponse && <span className="unanswered-text">Not Answered</span>}
-                                {item.userResponse && item.userResponse === item.correctOption && 
-                                    <span className="correct-text">Correct</span>
-                                }
-                                {item.userResponse && item.userResponse !== item.correctOption && 
-                                    <span className="incorrect-text">
-                                        Incorrect (You selected {item.userResponse}, correct answer is {item.correctOption})
-                                    </span>
-                                }
-                            </div>
-                        </div>
-                    ))
+                        ))}
+                    </div>
                 ) : (
                     <div className="no-data">No review data available</div>
                 )}
