@@ -91,74 +91,93 @@ const ReviewAnswers = () => {
 
     return (
         <div className="review-container">
-            <div className="review-header">
-                <h2>{subject} Assessment Review</h2>
-                <div className="score-summary">
-                    <div className="score-card">
-                        <div className="score-value">{score}</div>
-                        <div className="score-label">Score</div>
-                    </div>
-                    <div className="score-details">
-                        <div className="score-percentage">
-                            <span className="percentage-value">{percentage.toFixed(1)}%</span>
-                        </div>
-                        <div className="score-stats">
-                            <div>Attempted: {attemptedQuestions}/{totalQuestions}</div>
-                            <div>Correct: {score}/{totalQuestions}</div>
-                        </div>
-                    </div>
-                </div>
-                <div className="time-details">
-                    <div><strong>Started:</strong> {startTime}</div>
-                    <div><strong>Completed:</strong> {endTime}</div>
-                </div>
-            </div>
-
-            <div className="review-content">
-                <h3>Question Review ({reviewData.length} Questions)</h3>
-                {reviewData.length > 0 ? (
-                    <div className="questions-list">
-                        {reviewData.map((item, index) => (
-                            <div 
-                                key={index} 
-                                className={`question-review-item ${getStatusClass(item.userResponse, item.correctOption)}`}
-                            >
-                                <div className="question-number">Question {index + 1}</div>
-                                <div className="question-text">{item.questionText}</div>
-                                <div className="options-container">
-                                    {['A', 'B', 'C', 'D'].map(option => (
-                                        <div 
-                                            key={option} 
-                                            className={`option-item ${item.userResponse === option ? 'selected' : ''} ${item.correctOption === option ? 'correct-option' : ''}`}
-                                        >
-                                            <span className="option-letter">{option}</span>
-                                            <span className="option-text">{item[`option${option}`]}</span>
-                                        </div>
-                                    ))}
+            <div className="review-content-wrapper">
+                <div className="review-header">
+                    <div className="header-content">
+                        <h2>{subject} Assessment Review</h2>
+                        <div className="score-summary">
+                            <div className="score-card">
+                                <div className="score-value">{score}</div>
+                                <div className="score-label">Score</div>
+                            </div>
+                            <div className="score-details">
+                                <div className="score-percentage">
+                                    <span className="percentage-value">{percentage.toFixed(1)}%</span>
                                 </div>
-                                <div className="answer-status">
-                                    {!item.userResponse && <span className="unanswered-text">Not Answered</span>}
-                                    {item.userResponse && item.userResponse === item.correctOption && 
-                                        <span className="correct-text">Correct</span>
-                                    }
-                                    {item.userResponse && item.userResponse !== item.correctOption && 
-                                        <span className="incorrect-text">
-                                            Incorrect (You selected {item.userResponse}, correct answer is {item.correctOption})
-                                        </span>
-                                    }
+                                <div className="score-stats">
+                                    <div>
+                                        <span>Attempted</span>
+                                        <span>{attemptedQuestions}/{totalQuestions}</span>
+                                    </div>
+                                    <div>
+                                        <span>Correct</span>
+                                        <span>{score}/{totalQuestions}</span>
+                                    </div>
                                 </div>
                             </div>
-                        ))}
+                        </div>
+                        <div className="time-details">
+                            <div>
+                                <span><strong>Started</strong></span>
+                                <span>{startTime}</span>
+                            </div>
+                            <div>
+                                <span><strong>Completed</strong></span>
+                                <span>{endTime}</span>
+                            </div>
+                        </div>
                     </div>
-                ) : (
-                    <div className="no-data">No review data available</div>
-                )}
-            </div>
-            
-            <div className="review-actions">
-                <button onClick={() => navigate("/dashboard")} className="return-button">
-                    Return to Dashboard
-                </button>
+                    <div className="review-actions">
+                        <button onClick={() => navigate("/dashboard")} className="return-button">
+                            Return to Dashboard
+                        </button>
+                    </div>
+                </div>
+
+                <div className="review-content">
+                    <div className="content-inner">
+                        <div className="content-header">
+                            <h3>Question Review ({reviewData.length} Questions)</h3>
+                        </div>
+                        {reviewData.length > 0 ? (
+                            <div className="questions-list">
+                                {reviewData.map((item, index) => (
+                                    <div 
+                                        key={index} 
+                                        className={`question-review-item ${getStatusClass(item.userResponse, item.correctOption)}`}
+                                    >
+                                        <div className="question-number">Question {index + 1}</div>
+                                        <div className="question-text">{item.questionText}</div>
+                                        <div className="options-container">
+                                            {['A', 'B', 'C', 'D'].map(option => (
+                                                <div 
+                                                    key={option} 
+                                                    className={`option-item ${item.userResponse === option ? 'selected' : ''} ${item.correctOption === option ? 'correct-option' : ''}`}
+                                                >
+                                                    <span className="option-letter">{option}</span>
+                                                    <span className="option-text">{item[`option${option}`]}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="answer-status">
+                                            {!item.userResponse && <span className="unanswered-text">Not Answered</span>}
+                                            {item.userResponse && item.userResponse === item.correctOption && 
+                                                <span className="correct-text">Correct</span>
+                                            }
+                                            {item.userResponse && item.userResponse !== item.correctOption && 
+                                                <span className="incorrect-text">
+                                                    Incorrect (You selected {item.userResponse}, correct answer is {item.correctOption})
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="no-data">No review data available</div>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );

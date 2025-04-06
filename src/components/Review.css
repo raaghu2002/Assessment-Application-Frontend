@@ -1,4 +1,5 @@
-.review-container {
+/* Use more specific class names to avoid conflicts */
+.main-review-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -7,7 +8,7 @@
   padding: 20px;
 }
 
-.review-card {
+.main-review-card {
   max-width: 800px;
   width: 100%;
   background-color: white;
@@ -17,14 +18,15 @@
   text-align: center;
 }
 
-.review-content {
+.main-review-content {
   display: flex;
   flex-wrap: wrap;
   gap: 30px;
   justify-content: space-between;
 }
 
-.review-info, .review-stats {
+.main-review-info,
+.main-review-stats {
   flex: 1;
   min-width: 300px;
   background-color: #f8f9fa;
@@ -32,22 +34,24 @@
   padding: 20px;
 }
 
-.review-info h3, .review-stats h3 {
+.main-review-info h3,
+.main-review-stats h3 {
   color: #555;
   margin-bottom: 25px;
   font-weight: 500;
 }
 
-.review-info p, .review-stats p {
+.main-review-info p,
+.main-review-stats p {
   margin-bottom: 10px;
 }
 
-.review-button-container {
+.main-review-button-container {
   text-align: center;
   margin-top: 20px;
 }
 
-.review-button {
+.main-review-button {
   background-color: #007bff;
   color: white;
   border: none;
@@ -59,12 +63,12 @@
   transition: background-color 0.3s;
 }
 
-.review-button:hover {
+.main-review-button:hover {
   background-color: #0056b3;
 }
 
 @media (max-width: 768px) {
-  .review-content {
-    flex-direction: column;
+  .main-review-content {
+      flex-direction: column;
   }
 }
