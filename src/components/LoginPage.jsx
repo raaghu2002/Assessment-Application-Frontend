@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./LoginPage.css";
@@ -16,7 +16,31 @@ const LoginPage = () => {
   const [newPassword, setNewPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [showResetForm, setShowResetForm] = useState(false);
+  const [notification, setNotification] = useState({ show: false, message: "", type: "" });
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Handle keyboard navigation and submissions
+  const handleKeyDown = (e, action) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      action();
+    }
+  };
+
+  // Show notification instead of alert
+  const showNotification = (message, type = "error") => {
+    setNotification({
+      show: true,
+      message,
+      type
+    });
+    
+    // Auto-hide notification after 5 seconds
+    setTimeout(() => {
+      setNotification({ show: false, message: "", type: "" });
+    }, 5000);
+  };
 
   const handleNameChange = (e) => {
     setName(e.target.value);
@@ -63,24 +87,28 @@ const LoginPage = () => {
   const handleInitialRegistration = async () => {
     if (!validateForm()) return;
     try {
+      setIsLoading(true);
       const response = await axios.post(`${base_url}/api/auth/register`, {
         name,
         email,
       });
       
-      alert("OTP sent to your email. Please enter OTP to proceed.");
+      showNotification("OTP sent to your email. Please enter OTP to proceed.", "success");
       setIsOtpStep(true);
       setStoredEmail(email);
       setEmail("");
     } catch (error) {
       console.error("Registration failed:", error.response?.data);
-      alert("Registration failed");
+      showNotification(error.response?.data?.message || "Registration failed");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleOtpVerification = async () => {
     if (!validateForm()) return;
     try {
+      setIsLoading(true);
       // Use URLSearchParams to properly encode the query parameters
       const params = new URLSearchParams();
       params.append('email', storedEmail);
@@ -91,65 +119,67 @@ const LoginPage = () => {
         `${base_url}/api/auth/verify-otp?${params.toString()}`
       );
       
-      console.log("OTP verification response:", response.data);
-      alert("Account created successfully");
+      showNotification("Account created successfully", "success");
       setIsOtpStep(false);
       setIsSignUp(false);
     } catch (error) {
       console.error("OTP verification failed:", error.response?.data);
-      alert(`OTP verification failed: ${error.response?.data || error.message}`);
+      showNotification(error.response?.data?.message || "OTP verification failed");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleLogin = async () => {
     if (!validateForm()) return;
     try {
-      console.log("Attempting login with:", email, password);
+      setIsLoading(true);
       
       const params = new URLSearchParams();
       params.append('email', email);
       params.append('password', password);
       
-      console.log("Request URL:", `${base_url}/api/auth/login?${params.toString()}`);
-      
       const response = await axios.post(
         `${base_url}/api/auth/login?${params.toString()}`
       );
-  
-      console.log("Login response:", response);
-      console.log("Login response data:", response.data);
   
       if (response.status === 200) {
         const { name, email, token } = response.data;
         
         if (!token) {
-          console.error("No token received in response");
-          alert("Login failed: No authentication token received");
+          showNotification("Login failed: No authentication token received");
           return;
         }
   
-        console.log("Setting localStorage values:", name, email, token);
         localStorage.setItem("userId", email);
         localStorage.setItem("username", name);
         localStorage.setItem("email", email);
         localStorage.setItem("token", token);
   
-        console.log("Navigating to dashboard");
-        navigate("/dashboard");
+        // Redirect with success message
+        showNotification("Login successful, redirecting to dashboard...", "success");
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 1000);
       } else {
-        alert("Invalid credentials, please try again.");
+        showNotification("Invalid credentials, please try again.");
       }
     } catch (error) {
       console.error("Login failed:", error);
-      console.error("Error response:", error.response);
-      console.error("Error data:", error.response?.data);
-      alert(error.response?.data || "Login failed");
+      showNotification(error.response?.data?.message || "Login failed");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleForgotPassword = async () => {
+    if (!email) {
+      showNotification("Please enter your email");
+      return;
+    }
+    
     try {
-      // Use URLSearchParams to properly encode the query parameters
+      setIsLoading(true);
       const params = new URLSearchParams();
       params.append('email', email);
       
@@ -157,18 +187,20 @@ const LoginPage = () => {
         `${base_url}/api/auth/forgot-password?${params.toString()}`
       );
       
-      alert("OTP sent to your email for password reset.");
+      showNotification("OTP sent to your email for password reset.", "success");
       setShowResetForm(true);
       setStoredEmail(email);
     } catch (error) {
       console.error("Failed to send OTP for password reset:", error.response?.data);
-      alert("Failed to send OTP for password reset.");
+      showNotification("Failed to send OTP for password reset.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleResetPassword = async () => {
     try {
-      // Use URLSearchParams to properly encode the query parameters
+      setIsLoading(true);
       const params = new URLSearchParams();
       params.append('email', storedEmail);
       params.append('otp', resetOtp);
@@ -178,61 +210,79 @@ const LoginPage = () => {
         `${base_url}/api/auth/reset-password?${params.toString()}`
       );
       
-      alert("Password reset successful.");
+      showNotification("Password reset successful.", "success");
       setShowResetForm(false);
     } catch (error) {
       console.error("Failed to reset password:", error.response?.data);
-      alert(`Failed to reset password: ${error.response?.data || error.message}`);
+      showNotification(error.response?.data?.message || "Failed to reset password");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // In your Login component, after successful login:
-const handleSuccessfulLogin = (userData) => {
-  // Store user data in localStorage
-  localStorage.setItem("userId", userData.userId);
-  localStorage.setItem("username", userData.username);
-  
-  // Check if there's a redirect path stored
-  const redirectPath = sessionStorage.getItem("redirectAfterLogin");
-  
-  if (redirectPath) {
-    // Clear the stored path
-    sessionStorage.removeItem("redirectAfterLogin");
-    // Navigate to the stored path
-    navigate(redirectPath);
-  } else {
-    // Default navigation if no stored path
-    navigate("/dashboard");
-  }
-};
+  const handleSuccessfulLogin = (userData) => {
+    localStorage.setItem("userId", userData.userId);
+    localStorage.setItem("username", userData.username);
+    
+    const redirectPath = sessionStorage.getItem("redirectAfterLogin");
+    
+    if (redirectPath) {
+      sessionStorage.removeItem("redirectAfterLogin");
+      navigate(redirectPath);
+    } else {
+      navigate("/dashboard");
+    }
+  };
 
   return (
     <div className={`container ${isSignUp ? "right-panel-active" : ""}`}>
+      {/* Notification component */}
+      {notification.show && (
+        <div className={`notification ${notification.type}`}>
+          <p>{notification.message}</p>
+          <button 
+            className="close-notification"
+            onClick={() => setNotification({ show: false, message: "", type: "" })}
+          >
+            ×
+          </button>
+        </div>
+      )}
+      
       <div className="form-container sign-up-container">
         {isOtpStep ? (
           <form action="#">
-            <h1>Verify OTP and Set Password</h1>
+            <h1>Verify OTP</h1>
             <input
               type="email"
               placeholder="Email"
               value={storedEmail}
               readOnly
+              className="readonly-field"
             />
             <input
               type="text"
               placeholder="OTP"
               value={otp}
               onChange={handleOtpChange}
+              onKeyDown={(e) => handleKeyDown(e, handleOtpVerification)}
+              autoFocus
             />
             <input
               type="password"
-              placeholder="Password"
+              placeholder="Create Password"
               value={password}
               onChange={handlePasswordChange}
+              onKeyDown={(e) => handleKeyDown(e, handleOtpVerification)}
             />
             {errors.password && <p className="error-text">{errors.password}</p>}
-            <button type="button" onClick={handleOtpVerification}>
-              Verify OTP and Set Password
+            <button 
+              type="button" 
+              onClick={handleOtpVerification}
+              disabled={isLoading}
+              className={isLoading ? "loading" : ""}
+            >
+              {isLoading ? "Verifying..." : "Verify OTP & Set Password"}
             </button>
           </form>
         ) : (
@@ -252,23 +302,32 @@ const handleSuccessfulLogin = (userData) => {
             <span>or use your email for registration</span>
             <input
               type="text"
-              placeholder="Name"
+              placeholder="Full Name"
               value={name}
               onChange={handleNameChange}
+              onKeyDown={(e) => handleKeyDown(e, handleInitialRegistration)}
+              autoFocus
             />
             <input
               type="email"
               placeholder="Email"
               value={email}
               onChange={handleEmailChange}
+              onKeyDown={(e) => handleKeyDown(e, handleInitialRegistration)}
             />
             {errors.email && <p className="error-text">{errors.email}</p>}
-            <button type="button" onClick={handleInitialRegistration}>
-              Send OTP
+            <button 
+              type="button" 
+              onClick={handleInitialRegistration}
+              disabled={isLoading}
+              className={isLoading ? "loading" : ""}
+            >
+              {isLoading ? "Sending OTP..." : "Send OTP"}
             </button>
           </form>
         )}
       </div>
+      
       <div className="form-container sign-in-container">
         {showResetForm ? (
           <form action="#">
@@ -278,23 +337,39 @@ const handleSuccessfulLogin = (userData) => {
               placeholder="Email"
               value={storedEmail}
               readOnly
+              className="readonly-field"
             />
             <input
               type="text"
               placeholder="OTP"
               value={resetOtp}
               onChange={handleResetOtpChange}
+              onKeyDown={(e) => handleKeyDown(e, handleResetPassword)}
+              autoFocus
             />
             <input
               type="password"
               placeholder="New Password"
               value={newPassword}
               onChange={handleNewPasswordChange}
+              onKeyDown={(e) => handleKeyDown(e, handleResetPassword)}
             />
-            <button type="button" onClick={handleResetPassword}>
-              Reset Password
+            <button 
+              type="button" 
+              onClick={handleResetPassword}
+              disabled={isLoading}
+              className={isLoading ? "loading" : ""}
+            >
+              {isLoading ? "Resetting..." : "Reset Password"}
             </button>
-            <a href="#" onClick={() => setShowResetForm(false)}>
+            <a 
+              href="#" 
+              onClick={(e) => {
+                e.preventDefault();
+                setShowResetForm(false);
+              }}
+              className="back-link"
+            >
               Back to login
             </a>
           </form>
@@ -318,6 +393,8 @@ const handleSuccessfulLogin = (userData) => {
               placeholder="Email"
               value={email}
               onChange={handleEmailChange}
+              onKeyDown={(e) => handleKeyDown(e, handleLogin)}
+              autoFocus
             />
             {errors.email && <p className="error-text">{errors.email}</p>}
             <input
@@ -325,31 +402,53 @@ const handleSuccessfulLogin = (userData) => {
               placeholder="Password"
               value={password}
               onChange={handlePasswordChange}
+              onKeyDown={(e) => handleKeyDown(e, handleLogin)}
             />
-            <a href="#" onClick={handleForgotPassword}>
+            <a 
+              href="#" 
+              onClick={(e) => {
+                e.preventDefault();
+                handleForgotPassword();
+              }}
+              className="forgot-password"
+            >
               Forgot your password?
             </a>
-            <button type="button" onClick={handleLogin}>
-              Sign In
+            <button 
+              type="button" 
+              onClick={handleLogin}
+              disabled={isLoading}
+              className={isLoading ? "loading" : ""}
+            >
+              {isLoading ? "Signing In..." : "Sign In"}
             </button>
           </form>
         )}
       </div>
+      
       <div className="overlay-container">
         <div className="overlay">
           <div className="overlay-panel overlay-left">
             <img src="/images/wizzybox-logo.png" alt="WizzyBox Logo" className="logo" />
-            <h1>Welcome Back to WizzyBox!</h1>
+            <h1>Welcome Back!</h1>
             <p>Log in to access your job assessment tools and track your progress.</p>
-            <button className="ghost" id="signIn" onClick={() => setIsSignUp(false)}>
+            <button 
+              className="ghost" 
+              id="signIn" 
+              onClick={() => setIsSignUp(false)}
+            >
               Sign In
             </button>
           </div>
           <div className="overlay-panel overlay-right">
             <img src="/images/wizzybox-logo.png" alt="WizzyBox Logo" className="logo" />
             <h1>Join WizzyBox Today!</h1>
-            <p>Sign up to unlock a comprehensive job assessment platform designed to help you grow in your career.</p>
-            <button className="ghost" id="signUp" onClick={() => setIsSignUp(true)}>
+            <p>Sign up to unlock our comprehensive job assessment platform designed to help you grow in your career.</p>
+            <button 
+              className="ghost" 
+              id="signUp" 
+              onClick={() => setIsSignUp(true)}
+            >
               Sign Up
             </button>
           </div>
