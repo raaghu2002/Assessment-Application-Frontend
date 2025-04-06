@@ -1,4 +1,4 @@
-/* Global Styles */
+
 :root {
   --primary-color: #0f2027;
   --secondary-color: #203a43;
@@ -8,7 +8,7 @@
   --cta-start: #4fc3f7;
   --cta-end: #1976d2;
   --font-family: "Poppins", sans-serif;
-}
+} 
 
 body {
   margin: 0;

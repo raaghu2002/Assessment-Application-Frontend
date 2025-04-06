@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "./Dashboard.css";
+
 import RotatingCircles from "./RotatingCircles";
+import Navbar from "./Navbar";
+
+import "./Dashboard.css";
+
 const base_url = process.env.REACT_APP_BASE_URL || "http://localhost:8089";
-
-
 const Dashboard = () => {
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -46,21 +48,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <header>
-        <div className="rightContainer">
-          <img
-            src="/images/wizzybox-logo.png"
-            alt="Text Image"
-            className="transparentTextImage"
-          />
-          <nav className="nav">
-            <ul>
-              <li><a href="#why">Why WizzyBox</a></li>
-              <li><a href="#career">Career</a></li>
-              <li><a href="#contact">Contact Us</a></li>
-              <li><a href="#about">About Us</a></li>
-            </ul>
-          </nav>
-        </div>
+        <Navbar />
       </header>
 
       <div className="bodySection">
@@ -81,7 +69,7 @@ const Dashboard = () => {
               </button>
             </div>
 
-            
+
           </div>
 
           <div className="rightContainer">

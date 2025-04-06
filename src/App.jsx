@@ -22,13 +22,13 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
 
         {/* Protected Routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/guidelines" element={<Guidelines />} />
-          <Route path="/assessment" element={<AssessmentPage />} />
-          <Route path="/review" element={<Review />} />
-          <Route path="/reviewanswers" element={<ReviewAnswers />} />
-        </Route>
+         <Route element={<ProtectedRoute />}> 
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/guidelines" element={<Guidelines />} />
+        <Route path="/assessment" element={<AssessmentPage />} />
+        <Route path="/review" element={<Review />} />
+        <Route path="/reviewanswers" element={<ReviewAnswers />} />
+         </Route> 
 
         {/* Catch-all Route */}
         <Route path="*" element={<Navigate to="/login" />} />
