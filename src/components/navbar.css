@@ -1,0 +1,32 @@
+.nav-links-desktop {
+    display: none;
+  }
+  .nav-mobile-toggle {
+    display: block;
+  }
+  .profile-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    margin-top: 10px;
+    background-color: white;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  div:hover > .profile-dropdown {
+    display: block;
+  }
+  @media (min-width: 768px) {
+    .nav-links-desktop {
+      display: flex;
+      align-items: center;
+    }
+    .nav-mobile-toggle {
+      display: none;
+    }
+    .nav-links-mobile {
+      display: none;
+    }
+  }
+  
