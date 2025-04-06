@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -6,7 +6,7 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
-  
+
   const links = [
     { name: "Why WizzyBox", href: "#why" },
     { name: "Career", href: "#career" },
@@ -14,16 +14,41 @@ const Navbar = () => {
     { name: "About Us", href: "#about" },
   ];
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      setIsLoggedIn(true);
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+      if (user.profileImage) {
+        setProfileImage(user.profileImage);
+      } else {
+        setProfileImage("/images/default-profile.png");
+      }
+    } else {
+      setIsLoggedIn(false);
+      setProfileImage(null);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    setProfileImage(null);
+    window.location.href = "/login";
+  };
+
   return (
     <header className="w-full bg-[#0f2027] text-white font-poppins shadow-md z-50">
       <div className="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center">
-        {/* Logo */}
         <Link to="/" className="flex items-center">
           <img src="/images/wizzybox-logo.png" alt="WizzyBox" className="h-10 w-auto" />
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
+        <nav className="hidden md:flex items-center space-x-6 relative">
           {links.map((link) => (
             <a
               key={link.name}
@@ -33,22 +58,11 @@ const Navbar = () => {
               {link.name}
             </a>
           ))}
-         {isLoggedIn && profileImage ? (
-  <Link to="/profile" className="ml-4">
-    <img
-      src={profileImage}
-      alt="Profile"
-      className="h-8 w-8 rounded-full object-cover border-2 border-white"
-    />
-  </Link>
-) : (
-  <Link
-    to="/login"
-    className="ml-4 px-4 py-2 bg-white text-[#0f2027] rounded-md text-sm font-semibold hover:bg-gray-100 transition"
-  >
-    Login
-  </Link>
-)}
+
+          {/* Profile Hover Dropdown */}
+    
+
+
 
         </nav>
 
@@ -77,30 +91,6 @@ const Navbar = () => {
               {link.name}
             </a>
           ))}
-          {isLoggedIn ? (
-  <button
-    onClick={() => {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      setIsLoggedIn(false);
-      setProfileImage(null);
-      setMenuOpen(false);
-      window.location.href = "/login"; // or use navigate if using react-router
-    }}
-    className="inline-block mt-2 px-4 py-2 bg-white text-[#0f2027] rounded-md text-sm font-semibold hover:bg-gray-100 transition"
-  >
-    Logout
-  </button>
-) : (
-  <Link
-    to="/login"
-    onClick={() => setMenuOpen(false)}
-    className="inline-block mt-2 px-4 py-2 bg-white text-[#0f2027] rounded-md text-sm font-semibold hover:bg-gray-100 transition"
-  >
-    Login
-  </Link>
-)}
-
         </div>
       )}
     </header>
