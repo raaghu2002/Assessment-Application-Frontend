@@ -29,20 +29,25 @@ const Guidelines = () => {
             sessionStorage.setItem("redirectAfterLogin", location.pathname + location.search);
             navigate("/login");
         }
-    }, [navigate, location.pathname, location.search]);
+    }, [navigate, location.pathname, location.search, subject]);
 
+    // Function to check if user already attended assessment
     const checkIfUserHasAttendedAssessment = async (userId, subject) => {
         try {
-            const response = await axios.get(`${base_url}/user-responses/has-attended/${userId}/${subject}`);
-            
+            const response = await axios.get(
+                `${base_url}/user-responses/has-attended/${userId}/${subject}`,
+                {
+                    withCredentials: true 
+                }
+            );
             if (response.status === 200) {
                 setHasAttended(response.data);
             } else {
-                console.error("Failed to check if user has attended assessment:", response);
+                console.error("Unexpected response:", response);
             }
         } catch (error) {
-            console.error("Error checking if user has attended assessment:", error);
-            setHasAttended(false); // Default to false if an error occurs
+            console.error("Error checking attendance:", error);
+            setHasAttended(false); 
         }
     };
     

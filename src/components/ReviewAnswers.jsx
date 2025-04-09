@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import "./ReviewAnswers.css";
+
 const base_url = process.env.REACT_APP_BASE_URL || "http://localhost:8089";
 
 const ReviewAnswers = () => {
@@ -10,7 +11,7 @@ const ReviewAnswers = () => {
     const [error, setError] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();
-    
+
     const [score, setScore] = useState(0);
     const [startTime, setStartTime] = useState("");
     const [endTime, setEndTime] = useState("");
@@ -20,14 +21,12 @@ const ReviewAnswers = () => {
 
     useEffect(() => {
         const fetchReviewData = async () => {
-            // Check if location.state exists
             if (!location.state) {
                 setError("Assessment data not available. Please return to dashboard.");
                 setIsLoading(false);
                 return;
             }
 
-            // Destructure state safely here
             const {
                 score = 0,
                 startTime = "",
@@ -170,6 +169,12 @@ const ReviewAnswers = () => {
                                                 </span>
                                             }
                                         </div>
+
+                                        {item.explanation && (
+                                            <div className="explanation-section">
+                                                <strong>Explanation:</strong> {item.explanation}
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>

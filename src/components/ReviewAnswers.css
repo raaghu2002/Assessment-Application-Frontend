@@ -471,3 +471,11 @@
     font-size: 16px;
   }
 }
+.explanation-section {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-left: 4px solid #007bff;
+  margin-top: 10px;
+  font-style: italic;
+  color: #333;
+}

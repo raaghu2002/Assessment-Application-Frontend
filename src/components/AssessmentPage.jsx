@@ -135,7 +135,7 @@ function AssessmentPage() {
       }
     } catch (error) {
       console.error("Error submitting responses:", error);
-      alert("Failed to submit responses. Please try again.");
+      alert("User Already Submitted This Assessment.");
     }
   };
 

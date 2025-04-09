@@ -16,29 +16,29 @@ const Dashboard = () => {
 
   console.log("Token:", token);
 
-  // Fetch user data
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${base_url}/api/users/dashboard`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setUserData(response.data);
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-        if (error.response && error.response.status === 401) {
-          navigate("/login");
-        }
-      }
-    };
+  // // Fetch user data
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${base_url}/api/users/dashboard`,
+  //         { headers: { Authorization: `Bearer ${token}` } }
+  //       );
+  //       setUserData(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching dashboard data:", error);
+  //       if (error.response && error.response.status === 401) {
+  //         navigate("/login");
+  //       }
+  //     }
+  //   };
 
-    if (token) {
-      fetchData();
-    } else {
-      navigate("/login");
-    }
-  }, [token, navigate]);
+  //   if (token) {
+  //     fetchData();
+  //   } else {
+  //     navigate("/login");
+  //   }
+  // }, [token, navigate]);
 
   // Navigate to guidelines page with selected subject
   const handleSubjectClick = (subject) => {
